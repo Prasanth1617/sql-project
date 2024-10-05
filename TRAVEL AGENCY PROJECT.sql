@@ -167,6 +167,14 @@ VALUES
 (6, 6, 110.00),
 (7, 7, 120.00);
 
+CALL GetCustomerBookings();
+CALL GetAverageRating();
+CALL GetTotalSalesByDestination();
+CALL GetBookingsByAgent(1);
+CALL GetTotalCommissionByAgent();
+CALL GetAverageRatingPerPackage();
+
+
 
 SELECT c.customer_id, c.first_name, c.last_name, b.booking_id, p.details
 FROM customers c
@@ -211,3 +219,9 @@ FROM packages p
 LEFT JOIN reviews r ON p.package_id = r.package_id
 GROUP BY p.package_id
 ORDER BY average_rating DESC;
+
+
+SELECT c.customer_id, c.first_name, c.last_name, b.booking_id, p.details
+FROM bookings b
+RIGHT JOIN customers c ON b.customer_id = c.customer_id
+RIGHT JOIN packages p ON b.package_id = p.package_id;
