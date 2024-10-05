@@ -167,13 +167,90 @@ VALUES
 (6, 6, 110.00),
 (7, 7, 120.00);
 
-CALL GetCustomerBookings();
+-- 1. Stored Procedure for Get Average Rating
+
+/* CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAverageRating`()
+BEGIN
+    SELECT p.package_id, AVG(r.rating) AS average_rating
+    FROM packages p
+    LEFT JOIN reviews r ON p.package_id = r.package_id
+    GROUP BY p.package_id;
+END*/
+
 CALL GetAverageRating();
-CALL GetTotalSalesByDestination();
-CALL GetBookingsByAgent(1);
-CALL GetTotalCommissionByAgent();
+
+
+-- 2. Stored Procedure for Get Average Rating Per Package
+
+
+/*CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAverageRatingPerPackage`()
+BEGIN
+    SELECT p.package_id, p.details, AVG(r.rating) AS average_rating
+    FROM packages p
+    LEFT JOIN reviews r ON p.package_id = r.package_id
+    GROUP BY p.package_id
+    ORDER BY average_rating DESC;
+END */
+
 CALL GetAverageRatingPerPackage();
 
+
+-- 3. Stored Procedure for Get Bookings By Agent
+
+
+/*CREATE DEFINER=`root`@`localhost` PROCEDURE `GetBookingsByAgent`(IN agentId INT)
+BEGIN
+    SELECT b.booking_id, c.first_name, c.last_name, p.details
+    FROM bookings b
+    JOIN packages p ON b.package_id = p.package_id
+    JOIN customers c ON b.customer_id = c.customer_id
+    JOIN agent_commissions ac ON b.booking_id = ac.booking_id
+    WHERE ac.agent_id = agentId;  -- Use the passed agent ID
+END*/
+
+CALL GetBookingsByAgent(1);
+
+
+-- 4. Stored Procedure for Get Customer Bookings
+
+
+/*CREATE DEFINER=`root`@`localhost` PROCEDURE `GetCustomerBookings`()
+BEGIN
+    SELECT c.customer_id, c.first_name, c.last_name, b.booking_id, p.details
+    FROM customers c
+    LEFT JOIN bookings b ON c.customer_id = b.customer_id
+    LEFT JOIN packages p ON b.package_id = p.package_id;
+END*/
+
+CALL GetCustomerBookings();
+
+
+-- 5. Stored Procedure for Get Total Commission By Agent
+
+/*CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTotalCommissionByAgent`()
+BEGIN
+    SELECT a.agent_id, a.first_name, a.last_name, SUM(ac.commission_amount) AS total_commission
+    FROM agents a
+    LEFT JOIN agent_commissions ac ON a.agent_id = ac.agent_id
+    GROUP BY a.agent_id;
+END*/
+
+CALL GetTotalCommissionByAgent();
+
+
+-- 6. Stored Procedure for Get Total Sales By Destination
+
+
+/*CREATE DEFINER=`root`@`localhost` PROCEDURE `GetTotalSalesByDestination`()
+BEGIN
+    SELECT d.name, SUM(p.price) AS total_sales
+    FROM destinations d
+    JOIN packages p ON d.destination_id = p.destination_id
+    JOIN bookings b ON p.package_id = b.package_id
+    GROUP BY d.name;
+END*/
+
+CALL GetTotalSalesByDestination();
 
 
 SELECT c.customer_id, c.first_name, c.last_name, b.booking_id, p.details
